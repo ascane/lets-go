@@ -29,16 +29,15 @@ class Board(object):
         return i * self.size + j
 
     def idx2coo(self, idx):
-        return idx//self.size, idx%self.size
+        return idx // self.size, idx % self.size
 
     def empty(self):
-        corner_idx = np.array([0, self.size-1, self.size*(self.size-1), self.size*self.size-1])
-        bd_idx = np.zeros((self.size - 2)*4, dtype=int)
-        bd_idx[0:self.size-2] = np.arange(1, self.size-1)
-        bd_idx[self.size-2:2*(self.size-2)] = np.arange(self.size, self.size*(self.size-1), self.size)
-        bd_idx[2*(self.size-2):3*(self.size-2)] = np.arange(2*self.size-1, self.size*self.size-1, self.size)
-        bd_idx[3*(self.size-2):4*(self.size-2)] = np.arange(self.size*(self.size-1)+1, self.size*self.size-1)
-        print bd_idx
+        corner_idx = np.array([0, self.size - 1, self.size * (self.size - 1), self.size * self.size - 1])
+        bd_idx = np.zeros((self.size - 2) * 4, dtype = int)
+        bd_idx[0 : self.size - 2] = np.arange(1, self.size - 1)
+        bd_idx[self.size - 2 : 2 * (self.size - 2)] = np.arange(self.size, self.size * (self.size - 1), self.size)
+        bd_idx[2 * (self.size - 2) : 3 * (self.size - 2)] = np.arange(2 * self.size - 1, self.size * self.size - 1, self.size)
+        bd_idx[3 * (self.size - 2) : 4 * (self.size - 2)] = np.arange(self.size * (self.size - 1) + 1, self.size * self.size - 1)
         self.I = np.maximum(4 - self.distance, 0)
         self.I[:, corner_idx] = np.maximum(self.I[:, corner_idx] - 2, 0)
         self.I[:, bd_idx] = np.maximum(self.I[:, bd_idx] - 1, 0)
@@ -48,15 +47,15 @@ class Board(object):
         return 
 
     def adversarial(self):
-        ext_bound = np.zeros((4*(self.size+1), 2))
-        ext_bound[0:self.size+1, 0] = -1
-        ext_bound[0:self.size+1, 1] = np.arange(-1, self.size)
-        ext_bound[self.size+1:2*(self.size+1), 0] = np.arange(self.size+1)
-        ext_bound[self.size+1:2*(self.size+1), 1] = -1
-        ext_bound[2*(self.size+1):3*(self.size+1), 0] = np.arange(-1, self.size)
-        ext_bound[2*(self.size+1):3*(self.size+1), 1] = self.size
-        ext_bound[3*(self.size+1):4*(self.size+1), 0] = self.size
-        ext_bound[3*(self.size+1):4*(self.size+1), 1] = np.arange(self.size+1)
+        ext_bound = np.zeros((4 * (self.size + 1), 2))
+        ext_bound[0 : self.size + 1, 0] = -1
+        ext_bound[0 : self.size + 1, 1] = np.arange(-1, self.size)
+        ext_bound[self.size + 1 : 2 * (self.size + 1), 0] = np.arange(self.size + 1)
+        ext_bound[self.size + 1 : 2 * (self.size + 1), 1] = -1
+        ext_bound[2 * (self.size + 1) : 3 * (self.size + 1), 0] = np.arange(-1, self.size)
+        ext_bound[2 * (self.size + 1) : 3 * (self.size + 1), 1] = self.size
+        ext_bound[3 * (self.size + 1) : 4 * (self.size + 1), 0] = self.size
+        ext_bound[3 * (self.size + 1) : 4 * (self.size + 1), 1] = np.arange(self.size + 1)
         self.I = np.maximum(4 - self.distance, 0)
         bd_dist = cdist(self.coordinates, ext_bound, 'minkowski', 1)
         self.I_boundary = np.sum(np.maximum(4 - bd_dist, 0), 1)

@@ -24,12 +24,20 @@ class Board(object):
             self.adversarial()
         else:
             print 'not implemented!'
-    
+            
     def coo2idx(self, i, j):
         return i * self.size + j
 
     def idx2coo(self, idx):
         return idx // self.size, idx % self.size
+    
+    def shift(self, idx, di, dj):
+        i, j = self.idx2coo(idx)
+        if i + di >= self.size or i + di < 0:
+            return -1
+        if j + dj >= self.size or j + dj < 0:
+            return -1
+        return self.coo2idx(i + di, j + dj)
 
     def empty(self):
         corner_idx = np.array([0, self.size - 1, self.size * (self.size - 1), self.size * self.size - 1])

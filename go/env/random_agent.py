@@ -50,7 +50,6 @@ def main():
         logger.setLevel(logging.DEBUG)
 
     runner = env_runner.EnvRunner('random-v3', run_random, complete, base_dir=args.base_dir, video_callable=always_true, env_ids=['Go9x9-v0'])
-#     runner = env_runner.EnvRunner('random-v3', run_random, complete, base_dir=args.base_dir, video_callable=always_true, env_ids=['CartPole-v0'])
     runner.run()
 
     return 0

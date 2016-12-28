@@ -2,8 +2,9 @@ from math import sqrt, log
 
 
 class GameNode(object):
-    """docstring for structure"""
-    def __init__(self, move = None, parent = None, state = None):
+    """A node in the game tree. Note wins is always from the viewpoint of playerJustMoved.
+    """
+    def __init__(self, move=None, parent=None, state=None):
         self.move = move # the move that got us to this node - "None" for the root node
         self.parent_node = parent # "None" for the root node
         self.child_nodes = []

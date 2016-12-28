@@ -24,7 +24,7 @@ def UCT(rootstate, itermax, verbose=False):
             state.do_move(m)
             node = node.add_child(m, state) # add child and descend tree
             
-        # Rollout - this can often be made orders of magnitude quicker using a state.get_random_move() function
+        # Rollout
         # OpenAI Go board has its maximum limit of moves as 4096
         # state.get_moves() always contains -1
         while not(state.py_pachi_board.is_terminal) and state.nbmoves < 4096 and len(state.get_moves()) > 1: # while state is non-terminal
@@ -32,7 +32,7 @@ def UCT(rootstate, itermax, verbose=False):
         
         # Backpropagate
         while node != None: # backpropagate from the expanded node and work back to the root node
-            node.update(state.get_result(node.player_just_moved)) # state is terminal. Update node with result from POV of node.playerJustMoved
+            node.update(state.get_result(node.player_just_moved)) # state is terminal. Update node with result from POV of node.player_just_moved
             node = node.parent_node
 
     # Output some information about the tree - can be omitted

@@ -23,7 +23,7 @@ def complete(results):
 
 def run_mcts_mlucb(env):
     episode_count = 10
-    agent = RandomAgent(env.action_space)
+    agent = MctsMlucbAgent(env.action_space)
 
     for i in xrange(episode_count):
         ob = env.reset()

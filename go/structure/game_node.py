@@ -25,7 +25,7 @@ class GameNode(object):
         """ Remove m from untried_moves and add a new child node for this move.
             Return the added child node
         """
-        n = GameNode(move = m, parent = self, state = s)
+        n = GameNode(move=m, parent=self, state=s)
         self.untried_moves.remove(m)
         self.child_nodes.append(n)
         return n

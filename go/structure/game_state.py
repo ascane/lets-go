@@ -43,7 +43,7 @@ class GameState(object):
         official_score = self.py_pachi_board.official_score
         if ((official_score > 0 and player_current == WHITE) or (official_score < 0 and player_current == BLACK)):
             return 1
-        elif(official_score == 0):
+        elif (official_score == 0):
             return 0
         else:
             return -1

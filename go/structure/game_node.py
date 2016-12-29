@@ -11,14 +11,14 @@ class GameNode(object):
         self.wins = 0
         self.visits = 0
         self.untried_moves = state.get_moves() # future child nodes
-        self.player_just_moved = state.player_just_moved # the only part of the state that the GameNode needs later
+        self.player_just_moved = state.player_just_moved
         
-    def UCT_select_child(self):
+    def UCT_select_child(self, UCTK=1.):
         """ Use the UCB1 formula to select a child node. Often a constant UCTK is applied so we have
             lambda c: c.wins/c.visits + UCTK * sqrt(2*log(self.visits)/c.visits to vary the amount of
             exploration versus exploitation.
         """
-        s = sorted(self.child_nodes, key = lambda c: c.wins / c.visits + sqrt(2 * log(self.visits) / c.visits))[-1]
+        s = sorted(self.child_nodes, key = lambda c: c.wins / c.visits + UCTK * sqrt(2 * log(self.visits) / c.visits))[-1]
         return s
     
     def add_child(self, m, s):

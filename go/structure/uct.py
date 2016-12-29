@@ -49,7 +49,7 @@ def UCT_play_game(n_iter=1000, verbose=False):
     """
     _verbose = verbose
     state = game_state.GameState()
-    while (len(state.get_moves()) > 1):
+    while (len(state.get_moves()) > 1 and not(state.py_pachi_board.is_terminal)):
         if state.player_just_moved == 1:
             m = UCT(rootstate=state, itermax=n_iter, verbose=_verbose)
         else:

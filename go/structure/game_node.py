@@ -10,7 +10,7 @@ class GameNode(object):
         self.child_nodes = []
         self.wins = 0
         self.visits = 0
-        self.untried_moves = state.py_pachi_board.get_legal_coords(3 - state.player_just_moved, filter_suicides=True) # future child nodes
+        self.untried_moves = state.get_moves() # future child nodes
         self.player_just_moved = state.player_just_moved # the only part of the state that the GameNode needs later
         
     def UCT_select_child(self):

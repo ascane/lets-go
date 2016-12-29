@@ -54,6 +54,6 @@ l = [5, 1, 2, 3]
 print(sorted(l)[-1])
 
 
-# The implemented methods of PachiPy: https://github.com/openai/pachi-py/blob/master/pachi_py/cypachi.pyx#L159
+# The implemented methods of PyPachiBoard: https://github.com/openai/pachi-py/blob/master/pachi_py/cypachi.pyx#L159
 # black (X) = 1
 # white (O) = 2

@@ -37,11 +37,11 @@ class GameState(object):
         self.player_just_moved = 3 - self.player_just_moved
         self.py_pachi_board.play_inplace(coord, self.player_just_moved)
         
-    def get_result(self, player_current):
-        """ Get the game result from the viewpoint of player_current. 
+    def get_result(self, player_just_moved):
+        """ Get the game result from the viewpoint of player_just_moved. 
         """
         official_score = self.py_pachi_board.official_score
-        if ((official_score > 0 and player_current == WHITE) or (official_score < 0 and player_current == BLACK)):
+        if ((official_score > 0 and player_just_moved == WHITE) or (official_score < 0 and player_just_moved == BLACK)):
             return 1
         elif (official_score == 0):
             return 0

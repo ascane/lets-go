@@ -31,7 +31,7 @@ class GameNode(object):
         return n
     
     def update(self, result):
-        """ Update this node - one additional visit and result additional wins. result must be from the viewpoint of playerJustmoved.
+        """ Update this node - one additional visit and result additional wins. result must be from the viewpoint of player_just_moved.
         """
         self.visits += 1
         self.wins += result

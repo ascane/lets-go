@@ -1,8 +1,13 @@
 import numpy as np
 from scipy.spatial.distance import pdist, cdist, squareform
+import matplotlib.pyplot as plt
+
+BLACK = 1
+WHITE = 2
 
 class Board(object):
-    """docstring for structure"""
+    """Definition of boundary choice and immediate reward, used to prune the Monte Carlo Tree Search.
+    """
     def __init__(self, size):
         self.size = size
         coordinates = np.zeros((size * size, 2))
@@ -72,37 +77,37 @@ class Board(object):
         influence_white = np.sum(self.I[:, W_white], 1) - np.sum(self.I[:, W_black], 1) - self.I_boundary
         influence_black = np.sum(self.I[:, W_white], 1) - np.sum(self.I[:, W_black], 1) + self.I_boundary
         return (influence_white, influence_black)
-
-
-
-# def empty(d):
-#     coordinates = np.zeros((d*d, 2))
-#     coordinates[:, 0] = np.repeat(np.arange(d), d)
-#     coordinates[:, 1] = np.tile(np.arange(d), d)
-#     distance = squareform(pdist(coordinates, 'minkowski', 1))
-
-
-# def adversarial(d):
-#     coordinates = np.zeros((d*d, 2))
-#     coordinates[:, 0] = np.repeat(np.arange(d), d)
-#     coordinates[:, 1] = np.tile(np.arange(d), d)
-#     ext_bound = np.zeros((4*(d+1), 2))
-#     ext_bound[0:d+1, 0] = -1
-#     ext_bound[0:d+1, 1] = np.arange(-1, d)
-#     ext_bound[d+1:2*(d+1), 0] = np.arange(d+1)
-#     ext_bound[d+1:2*(d+1), 1] = -1
-#     ext_bound[2*(d+1):3*(d+1), 0] = np.arange(-1, d)
-#     ext_bound[2*(d+1):3*(d+1), 1] = d 
-#     ext_bound[3*(d+1):4*(d+1), 0] = d
-#     ext_bound[3*(d+1):4*(d+1), 1] = np.arange(d+1)
-#     distance = squareform(pdist(coordinates, 'minkowski', 1))
-#     I = np.maximum(4 - distance, 0)
-#     bd_dist = cdist(coordinates, ext_bound, 'minkowski', 1)
-#     I_boundary = np.sum(np.maximum(4 - bd_dist, 0), 1)
-#     return I, I_boundary
-
-
-def influence(I, I_boundary, W_white, W_black):
-    influence_white = np.sum(I[:, W_white], 1) - np.sum(I[:, W_black], 1) - I_boundary
-    influence_black = np.sum(I[:, W_white], 1) - np.sum(I[:, W_black], 1) + I_boundary
-    return (influence_white, influence_black)
+    
+    def listcoo2listidx(self, list_coord):
+        result = []
+        while not(list_coord.empty()):
+            coo = list_coord.pop()
+            result.append(self.coo2idx(coo[0], coo[1]))
+        return result
+    
+    def get_immediate_reward(self, player_just_moved, W_white, W_black, parent_W_white=[], parent_W_black=[]):
+        assert player_just_moved == BLACK or player_just_moved == WHITE
+        R = 0
+        IW, IB = self.get_influence(W_white, W_black)
+        parent_IW, parent_IB = self.get_influence(parent_W_white, parent_W_black)
+        if player_just_moved == BLACK:
+            R += len(parent_W_white) - len(W_white) # captures
+            for idx in range(self.size * self.size):
+                R += IB[idx] - parent_IB[idx]
+                if  parent_IB[idx] < 0 and IB[idx] >= 0:
+                    R += 1
+        else:
+            R += len(parent_W_black) - len(W_black) # captures
+            for idx in range(self.size * self.size):
+                R += IW[idx] - parent_IW[idx]
+                if  parent_IW[idx] < 0 and IW[idx] >= 0:
+                    R += 1
+        return R
+    
+    def get_immediate_reward(self, player_just_moved, list_coo_white, list_coo_black, list_coo_parent_white=[], list_coo_parent_black=[]):
+        W_white = self.listcoo2listidx(list_coo_white)
+        W_black = self.listcoo2listidx(list_coo_black)
+        parent_W_white = self.listcoo2listidx(list_coo_parent_white)
+        parent_W_black = self.listcoo2listidx(list_coo_parent_black)
+        return self.get_immediate_reward(player_just_moved, W_white, W_black, parent_W_white, parent_W_black)
+    

@@ -1,5 +1,6 @@
 import gym
 
+
 BLACK = 1
 WHITE = 2
  
@@ -44,11 +45,15 @@ print(white_stone_array)
 print(b.black_stones)
 print(b.white_stones)
 
+W = b.white_stones
+print(len(W))
+
 print(b.size)
 
 print(b.get_legal_coords(BLACK, filter_suicides=True))
 print(b.coord_to_ij(20))
 print(b.ij_to_coord(8, 8))
+print(b.ij_to_coord(0, 0))
 
 l = [5, 1, 2, 3]
 print(sorted(l)[-1])

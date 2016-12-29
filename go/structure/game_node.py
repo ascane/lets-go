@@ -1,4 +1,7 @@
 from math import sqrt, log
+import board
+
+d = 9
 
 
 class GameNode(object):
@@ -12,6 +15,8 @@ class GameNode(object):
         self.visits = 0
         self.untried_moves = state.get_moves() # future child nodes
         self.player_just_moved = state.player_just_moved
+        self.black_stones = state.py_pachi_board.black_stones # for the computation of immediate reward
+        self.white_stones = state.py_pachi_board.white_stones # for the computation of immediate reward
         
     def UCT_select_child(self, UCTK=1.):
         """ Use the UCB1 formula to select a child node. Often a constant UCTK is applied so we have

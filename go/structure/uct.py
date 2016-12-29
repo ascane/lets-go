@@ -44,7 +44,7 @@ def UCT(rootstate, itermax, verbose=False):
     return sorted(rootnode.child_nodes, key = lambda c: c.visits)[-1].move # return the move that was most visited
                 
 def UCT_play_game(n_iter=1000, verbose=False):
-    """ Play a sample game between two UCT players where each player gets a different number 
+    """ Play a sample game between two UCT players where each player gets a different number
         of UCT iterations (= simulations = tree nodes).
     """
     _verbose = verbose
@@ -65,6 +65,6 @@ def UCT_play_game(n_iter=1000, verbose=False):
     else: print "Nobody wins!"
     
 if __name__ == "__main__":
-    """ Play a single game to the end using UCT for both players. 
+    """ Play a single game to the end using UCT for both players.
     """
     UCT_play_game(verbose=True)

@@ -2,7 +2,7 @@ from math import sqrt, log
 
 
 class GameNode(object):
-    """A node in the game tree. Note wins is always from the viewpoint of playerJustMoved.
+    """A node in the game tree. Note wins is always from the viewpoint of player_just_moved.
     """
     def __init__(self, move=None, parent=None, state=None):
         self.move = move # the move that got us to this node - "None" for the root node
@@ -23,7 +23,7 @@ class GameNode(object):
     
     def add_child(self, m, s):
         """ Remove m from untried_moves and add a new child node for this move.
-            Return the added child node
+            Return the added child node.
         """
         n = GameNode(move=m, parent=self, state=s)
         self.untried_moves.remove(m)
@@ -31,7 +31,8 @@ class GameNode(object):
         return n
     
     def update(self, result):
-        """ Update this node - one additional visit and result additional wins. result must be from the viewpoint of player_just_moved.
+        """ Update this node - one additional visit and result additional wins. result must be from the
+            viewpoint of player_just_moved.
         """
         self.visits += 1
         self.wins += result

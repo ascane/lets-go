@@ -78,14 +78,14 @@ class Board(object):
         influence_black = np.sum(self.I[:, W_white], 1) - np.sum(self.I[:, W_black], 1) + self.I_boundary
         return (influence_white, influence_black)
     
-    def listcoo2listidx(self, list_coord):
+    def arraycoo2listidx(self, array_coord):
         result = []
-        while not(list_coord.empty()):
-            coo = list_coord.pop()
+        for i in range(len(array_coord)):
+            coo = array_coord[i]
             result.append(self.coo2idx(coo[0], coo[1]))
         return result
     
-    def get_immediate_reward(self, player_just_moved, W_white, W_black, parent_W_white=[], parent_W_black=[]):
+    def get_immediate_reward_aux(self, player_just_moved, W_white, W_black, parent_W_white=[], parent_W_black=[]):
         assert player_just_moved == BLACK or player_just_moved == WHITE
         R = 0
         IW, IB = self.get_influence(W_white, W_black)
@@ -93,21 +93,20 @@ class Board(object):
         if player_just_moved == BLACK:
             R += len(parent_W_white) - len(W_white) # captures
             for idx in range(self.size * self.size):
-                R += IB[idx] - parent_IB[idx]
+                R += max(IB[idx] - parent_IB[idx], 0.)
                 if  parent_IB[idx] < 0 and IB[idx] >= 0:
                     R += 1
         else:
             R += len(parent_W_black) - len(W_black) # captures
             for idx in range(self.size * self.size):
-                R += IW[idx] - parent_IW[idx]
+                R += max(IW[idx] - parent_IW[idx], 0.)
                 if  parent_IW[idx] < 0 and IW[idx] >= 0:
                     R += 1
         return R
     
-    def get_immediate_reward(self, player_just_moved, list_coo_white, list_coo_black, list_coo_parent_white=[], list_coo_parent_black=[]):
-        W_white = self.listcoo2listidx(list_coo_white)
-        W_black = self.listcoo2listidx(list_coo_black)
-        parent_W_white = self.listcoo2listidx(list_coo_parent_white)
-        parent_W_black = self.listcoo2listidx(list_coo_parent_black)
-        return self.get_immediate_reward(player_just_moved, W_white, W_black, parent_W_white, parent_W_black)
-    
+    def get_immediate_reward(self, player_just_moved, array_coo_white, array_coo_black, array_coo_parent_white=[], array_coo_parent_black=[]):
+        W_white = self.arraycoo2listidx(array_coo_white)
+        W_black = self.arraycoo2listidx(array_coo_black)
+        parent_W_white = self.arraycoo2listidx(array_coo_parent_white)
+        parent_W_black = self.arraycoo2listidx(array_coo_parent_black)
+        return self.get_immediate_reward_aux(player_just_moved, W_white, W_black, parent_W_white, parent_W_black)

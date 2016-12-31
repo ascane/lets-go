@@ -4,7 +4,8 @@ import random
 from abc import abstractmethod
 
 class Strategy(object):
-    
+    """An abstract class for a game strategy.
+    """
     @abstractmethod
     def get_state(self):
         pass
@@ -14,6 +15,8 @@ class Strategy(object):
         pass
         
 class UctStrategy(Strategy):
+    """A game strategy based on UCT.
+    """
     def __init__(self, prune=False, zero_sum=False, epsilon=0., n_iter=1000, verbose=False):
         self.prune = prune
         self.zero_sum = zero_sum
@@ -31,6 +34,8 @@ class UctStrategy(Strategy):
         return uct.UCT(self.state, self.n_iter,  self.verbose)
     
 class RandomStrategy(Strategy):
+    """A random game strategy, i.e. takes a random action among all possibilities at each move.
+    """
     def __init__(self, verbose=False):
         self.verbose = verbose
         self.state = None
@@ -44,6 +49,9 @@ class RandomStrategy(Strategy):
         return random.choice(self.get_state().get_all_moves()) 
     
 def play_game(strategy1, strategy2):
+    """Play a simple game between two players. The first player (black, X) plays with strategy1
+       and the second (whtie, O) with strategy2.
+    """
     assert isinstance(strategy1, Strategy)
     assert isinstance(strategy2, Strategy)
     

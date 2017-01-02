@@ -17,17 +17,18 @@ class Strategy(object):
 class UctStrategy(Strategy):
     """A game strategy based on UCT.
     """
-    def __init__(self, prune=False, zero_sum=False, epsilon=0., n_iter=1000, verbose=False):
+    def __init__(self, prune=False, zero_sum=False, epsilon=0., minmax=False, n_iter=1000, verbose=False):
         self.prune = prune
         self.zero_sum = zero_sum
         self.epsilon = epsilon
+        self.minmax = minmax
         self.n_iter = n_iter
         self.verbose = verbose
         self.state = None
         
     def get_state(self):
         if not(self.state):
-            self.state = game_state.GameState(self.prune, self.zero_sum, self.epsilon)
+            self.state = game_state.GameState(self.prune, self.zero_sum, self.epsilon, self.minmax)
         return self.state
     
     def next_move(self):
@@ -76,7 +77,7 @@ def play_game(strategy1, strategy2):
     else: print "Nobody wins!"
     
 if __name__ == "__main__":
-    strategy1 = UctStrategy()
+    strategy1 = UctStrategy(prune=True, zero_sum=False, epsilon=0., minmax=True, n_iter=10)
     strategy2 = RandomStrategy(verbose=True)
     play_game(strategy1, strategy2)
     

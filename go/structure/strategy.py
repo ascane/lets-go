@@ -88,15 +88,19 @@ def play_game(strategy1, strategy2):
     
     
 if __name__ == "__main__":
-    wins = [0, 0]
-    strategy1 = UctStrategy()
+    strategy1 = UctStrategy(prune=True, zero_sum=False, epsilon=0., minmax=True, n_iter=10)
     strategy2 = RandomStrategy(verbose=True)
-    for i in range(100):
-        strategy1.reset()
-        strategy2.reset()
-        result = play_game(strategy1, strategy2)
-        if result != 0:
-            wins[result - 1] += 1
-    print "Strategy1: " + str(wins[0]) + " wins. Strategy2: " + str(wins[1]) + " wins."
+    play_game(strategy1, strategy2)
+    
+#     wins = [0, 0]
+#     strategy1 = UctStrategy()
+#     strategy2 = RandomStrategy(verbose=True)
+#     for i in range(100):
+#         strategy1.reset()
+#         strategy2.reset()
+#         result = play_game(strategy1, strategy2)
+#         if result != 0:
+#             wins[result - 1] += 1
+#     print "Strategy1: " + str(wins[0]) + " wins. Strategy2: " + str(wins[1]) + " wins."
     
     

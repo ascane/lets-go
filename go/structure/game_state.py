@@ -58,12 +58,12 @@ class GameState(object):
         next_state = self.clone()
         next_state.do_move(coord)
         next_moves = next_state.get_all_moves()
-        next_reward_min = next_state.get_immediate_reward_aux(next_moves[0])
+        next_reward_max = next_state.get_immediate_reward_aux(next_moves[0])
         for m in next_moves:
             next_reward = next_state.get_immediate_reward_aux(m)
-            if next_reward < next_reward_min:
-                next_reward_min = next_reward
-        return reward - next_reward_min
+            if next_reward > next_reward_max:
+                next_reward_max = next_reward
+        return reward - next_reward_max
 
     def get_all_moves(self):
         """Get all possible moves from this state, including not playing any stone (-1).

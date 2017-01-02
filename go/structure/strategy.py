@@ -32,7 +32,10 @@ class UctStrategy(Strategy):
         return self.state
     
     def next_move(self):
-        return uct.UCT(self.state, self.n_iter,  self.verbose)
+        return uct.UCT(self.state, self.n_iter, self.verbose)
+    
+    def reset(self):
+        self.state = None
     
 class RandomStrategy(Strategy):
     """A random game strategy, i.e. takes a random action among all possibilities at each move.
@@ -47,7 +50,10 @@ class RandomStrategy(Strategy):
         return self.state
     
     def next_move(self):
-        return random.choice(self.get_state().get_all_moves()) 
+        return random.choice(self.get_state().get_all_moves())
+    
+    def reset(self):
+        self.state = None
     
 def play_game(strategy1, strategy2):
     """Play a simple game between two players. The first player (black, X) plays with strategy1
@@ -72,13 +78,25 @@ def play_game(strategy1, strategy2):
             print(state2.py_pachi_board)
     if state1.get_result(state1.player_just_moved) > 0:
         print "Player " + str(state1.player_just_moved) + " wins!"
+        return state1.player_just_moved
     elif state1.get_result(state1.player_just_moved) < 0:
         print "Player " + str(3 - state1.player_just_moved) + " wins!"
-    else: print "Nobody wins!"
+        return 3 - state1.player_just_moved
+    else:
+        print "Nobody wins!"
+        return 0
+    
     
 if __name__ == "__main__":
-    strategy1 = UctStrategy(prune=True, zero_sum=False, epsilon=0., minmax=True, n_iter=10)
+    wins = [0, 0]
+    strategy1 = UctStrategy()
     strategy2 = RandomStrategy(verbose=True)
-    play_game(strategy1, strategy2)
+    for i in range(100):
+        strategy1.reset()
+        strategy2.reset()
+        result = play_game(strategy1, strategy2)
+        if result != 0:
+            wins[result - 1] += 1
+    print "Strategy1: " + str(wins[0]) + " wins. Strategy2: " + str(wins[1]) + " wins."
     
     

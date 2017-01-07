@@ -34,13 +34,18 @@ b.play_inplace(20, BLACK)
 print(b)
 print(b.official_score)
 b.play_inplace(31, WHITE)
-
 print(b)
 print(b.official_score)
 if b.is_terminal:
     print("yes")
 else:
     print("no")
+    
+b.play_inplace(b.ij_to_coord(0, 1), BLACK)
+b.play_inplace(b.ij_to_coord(1, 0), BLACK)
+b.play_inplace(b.ij_to_coord(3, 3), BLACK)
+print(b)
+print(b.official_score)
 
  
 black_stone_array = b.get_stones(BLACK)

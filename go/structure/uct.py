@@ -30,7 +30,7 @@ def UCT(rootstate, itermax,  verbose=False):
             state.do_move(random.choice(state.get_all_moves()), update=False)
         
         # Backpropagate
-        while node != None: # backpropagate from the expanded node and work back to the root node
+        while node is not None: # backpropagate from the expanded node and work back to the root node
             node.update(state.get_result(node.player_just_moved)) # state is terminal. Update node with result from POV of node.player_just_moved
             node = node.parent_node
 

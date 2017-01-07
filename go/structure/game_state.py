@@ -14,18 +14,19 @@ class GameState(object):
     """A state of the game board, needed in Monte Carlo Tree Search.
        By convention, the players are numbered 1 (Black, X) and 2 (White, O).
     """
-    def __init__(self, prune=False, zero_sum=False, epsilon=0., minmax=False):
+    def __init__(self, prune=False, zero_sum=False, epsilon=0., minmax=False, immediate=False):
         self.py_pachi_board = env.state.board.clone()
         self.player_just_moved = CONST.WHITE() # At the root pretend the player just moved is player 2 - player 1 has the first move
         self.nbmoves = 0
         # official_score Ref: https://github.com/openai/pachi-py/blob/9cb949b9d1f2126c4f624f23ee7b982af59f5402/pachi_py/pachi/board.c#L1556
         self.prune = prune
-        # self.accumulated_reward = [0.0, 0.0] # B/W for immediate reward 
+        self.accumulated_reward = [0.0, 0.0] # B/W for immediate reward 
         self.zero_sum = zero_sum
         self.epsilon = epsilon
         self.minmax = minmax
         self.IW = None
         self.IB = None
+        self.immediate = immediate
     
     def clone(self):
         """ Create a deep clone of this game state.
@@ -41,6 +42,7 @@ class GameState(object):
         st.minmax = self.minmax
         st.IW = self.IW
         st.IB = self.IB
+        st.immediate = self.immediate
         return st
     
     def get_immediate_reward_aux(self, coord):
@@ -76,7 +78,7 @@ class GameState(object):
     
     def coord_to_idx(self, coord):
         i, j = self.py_pachi_board.coord_to_ij(coord)
-        return b.coo2idx(i, j)
+        return b.ij_to_idx(i, j)
 
     def get_all_moves(self):
         """Get all possible moves from this state, including not playing any stone (-1).
@@ -106,14 +108,17 @@ class GameState(object):
             return result
     
     def do_move(self, coord, update=True):
-#         if self.prune and update:
-#             r = self.get_immediate_reward(coord)
-#             self.accumulated_reward[self.player_just_moved - 1] += r
-#             if self.zero_sum:
-#                 self.accumulated_reward[(3 - self.player_just_moved) - 1] -= r
-
         if self.prune and update:
-            _, self.IW, self.IB = self.get_immediate_reward_aux(coord)
+            r, self.IW, self.IB = self.get_immediate_reward_aux(coord)
+            if self.immediate:
+                self.accumulated_reward[self.player_just_moved - 1] += r
+                if self.zero_sum:
+                    self.accumulated_reward[(3 - self.player_just_moved) - 1] -= r
+        elif self.immediate:
+            r, _, _ = self.get_immediate_reward_aux(coord)
+            self.accumulated_reward[self.player_just_moved - 1] += r
+            if self.zero_sum:
+                self.accumulated_reward[(3 - self.player_just_moved) - 1] -= r
         self.nbmoves += 1
         self.player_just_moved = 3 - self.player_just_moved
         self.py_pachi_board.play_inplace(coord, self.player_just_moved)
@@ -121,10 +126,19 @@ class GameState(object):
     def get_result(self, player_just_moved):
         """ Get the game result from the viewpoint of player_just_moved. 
         """
-        official_score = self.py_pachi_board.official_score
-        if ((official_score > 0 and player_just_moved == CONST.WHITE()) or (official_score < 0 and player_just_moved == CONST.BLACK())):
-            return 1
-        elif (official_score == 0):
-            return 0
-        else:
-            return -1
+        if self.immediate:
+            diff_black_white = self.accumulated_reward[CONST.BLACK() - 1] - self.accumulated_reward[CONST.WHITE() - 1]
+            if (diff_black_white > 0 and player_just_moved == CONST.BLACK()) or (diff_black_white < 0 and player_just_moved == CONST.WHITE()):
+                return 1
+            elif diff_black_white == 0:
+                return 0
+            else:
+                 return -1
+        else:    
+            official_score = self.py_pachi_board.official_score
+            if ((official_score > 0 and player_just_moved == CONST.WHITE()) or (official_score < 0 and player_just_moved == CONST.BLACK())):
+                return 1
+            elif official_score == 0:
+                return 0
+            else:
+                return -1

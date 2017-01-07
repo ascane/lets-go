@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.spatial.distance import pdist, cdist, squareform
-import matplotlib.pyplot as plt
 import const
 
 CONST = const.CONST
@@ -30,19 +29,19 @@ class Board(object):
         else:
             print 'not implemented!'
             
-    def coo2idx(self, i, j):
+    def ij_to_idx(self, i, j):
         return i * self.size + j
 
-    def idx2coo(self, idx):
+    def idx_to_ij(self, idx):
         return idx // self.size, idx % self.size
     
     def shift(self, idx, di, dj):
-        i, j = self.idx2coo(idx)
+        i, j = self.idx_to_ij(idx)
         if i + di >= self.size or i + di < 0:
             return -1
         if j + dj >= self.size or j + dj < 0:
             return -1
-        return self.coo2idx(i + di, j + dj)
+        return self.ij_to_idx(i + di, j + dj)
 
     def empty(self):
         corner_idx = np.array([0, self.size - 1, self.size * (self.size - 1), self.size * self.size - 1])
@@ -78,11 +77,11 @@ class Board(object):
         influence_black = influence_white + self.I_boundary
         return (influence_white, influence_black)
     
-    def arraycoo2listidx(self, array_coord):
+    def array_ij_to_list_idx(self, array_ij):
         result = []
-        for i in range(len(array_coord)):
-            coo = array_coord[i]
-            result.append(self.coo2idx(coo[0], coo[1]))
+        for i in range(len(array_ij)):
+            ij = array_ij[i]
+            result.append(self.ij_to_idx(ij[0], ij[1]))
         return result
     
     def get_immediate_reward_aux(self, player_just_moved, W_white, W_black, parent_W_white=[], parent_W_black=[], move=None, parent_IW=None, parent_IB=None):
@@ -137,8 +136,8 @@ class Board(object):
         return R, IW, IB
     
     def get_immediate_reward(self, player_just_moved, array_coo_white, array_coo_black, array_coo_parent_white=[], array_coo_parent_black=[], move=None, parent_IW=None, parent_IB=None):
-        W_white = self.arraycoo2listidx(array_coo_white)
-        W_black = self.arraycoo2listidx(array_coo_black)
-        parent_W_white = self.arraycoo2listidx(array_coo_parent_white)
-        parent_W_black = self.arraycoo2listidx(array_coo_parent_black)
+        W_white = self.array_ij_to_list_idx(array_coo_white)
+        W_black = self.array_ij_to_list_idx(array_coo_black)
+        parent_W_white = self.array_ij_to_list_idx(array_coo_parent_white)
+        parent_W_black = self.array_ij_to_list_idx(array_coo_parent_black)
         return self.get_immediate_reward_aux(player_just_moved, W_white, W_black, parent_W_white, parent_W_black, move, parent_IW, parent_IB)

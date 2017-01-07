@@ -111,14 +111,14 @@ class GameState(object):
         if self.prune and update:
             r, self.IW, self.IB = self.get_immediate_reward_aux(coord)
             if self.immediate:
-                self.accumulated_reward[self.player_just_moved - 1] += r
+                self.accumulated_reward[(3 - self.player_just_moved) - 1] += r
                 if self.zero_sum:
-                    self.accumulated_reward[(3 - self.player_just_moved) - 1] -= r
+                    self.accumulated_reward[self.player_just_moved - 1] -= r
         elif self.immediate:
             r, _, _ = self.get_immediate_reward_aux(coord)
-            self.accumulated_reward[self.player_just_moved - 1] += r
+            self.accumulated_reward[(3 - self.player_just_moved) - 1] += r
             if self.zero_sum:
-                self.accumulated_reward[(3 - self.player_just_moved) - 1] -= r
+                self.accumulated_reward[self.player_just_moved - 1] -= r
         self.nbmoves += 1
         self.player_just_moved = 3 - self.player_just_moved
         self.py_pachi_board.play_inplace(coord, self.player_just_moved)

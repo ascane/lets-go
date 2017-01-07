@@ -93,8 +93,9 @@ if __name__ == "__main__":
     strategy0 = UctStrategy()
     strategy1 = UctStrategy(n_iter=10, prune=True, zero_sum=False, epsilon=0., minmax=True, minmax_p=2)
     strategy2 = RandomStrategy(verbose=True)
-    strategy3 = UctStrategy(n_iter=1000, prune=False, zero_sum=False, epsilon=0., minmax=True, immediate=True)
-    play_game(strategy1, strategy2)
+    strategy3 = UctStrategy(n_iter=1000, prune=False, zero_sum=False, epsilon=0., minmax=True)
+    strategy4 = UctStrategy(n_iter=1000, prune=False, zero_sum=False, epsilon=0., minmax=True, immediate=True, verbose=True)
+    play_game(strategy3, strategy4)
     
 #     wins = [0, 0]
 #     strategy1 = UctStrategy()

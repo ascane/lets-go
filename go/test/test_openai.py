@@ -3,6 +3,7 @@ sys.path.append("..")
 
 import gym
 from structure import const
+import numpy as np
 
 CONST = const.CONST
 
@@ -79,6 +80,7 @@ print j
 
 print not(None)
 
+print -np.inf < 0
 
 # The implemented methods of PyPachiBoard: https://github.com/openai/pachi-py/blob/master/pachi_py/cypachi.pyx#L159
 # black (X) = 1

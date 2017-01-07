@@ -17,19 +17,20 @@ class Strategy(object):
 class UctStrategy(Strategy):
     """A game strategy based on UCT.
     """
-    def __init__(self, n_iter=1000, prune=False, zero_sum=False, epsilon=0., minmax=False, immediate=False, verbose=False):
+    def __init__(self, n_iter=1000, prune=False, zero_sum=False, epsilon=0., minmax=False, minmax_p=2, immediate=False, verbose=False):
         self.n_iter = n_iter
         self.prune = prune
         self.zero_sum = zero_sum
         self.epsilon = epsilon
         self.minmax = minmax
+        self.minmax_p = minmax_p
         self.verbose = verbose
         self.immediate = immediate
         self.state = None
         
     def get_state(self):
         if not(self.state):
-            self.state = game_state.GameState(self.prune, self.zero_sum, self.epsilon, self.minmax, self.immediate)
+            self.state = game_state.GameState(self.prune, self.zero_sum, self.epsilon, self.minmax, self.minmax_p, self.immediate)
         return self.state
     
     def next_move(self):
@@ -90,10 +91,10 @@ def play_game(strategy1, strategy2):
     
 if __name__ == "__main__":
     strategy0 = UctStrategy()
-    strategy1 = UctStrategy(n_iter=10, prune=True, zero_sum=False, epsilon=0., minmax=True)
+    strategy1 = UctStrategy(n_iter=10, prune=True, zero_sum=False, epsilon=0., minmax=True, minmax_p=2)
     strategy2 = RandomStrategy(verbose=True)
     strategy3 = UctStrategy(n_iter=1000, prune=False, zero_sum=False, epsilon=0., minmax=True, immediate=True)
-    play_game(strategy0, strategy2)
+    play_game(strategy1, strategy2)
     
 #     wins = [0, 0]
 #     strategy1 = UctStrategy()

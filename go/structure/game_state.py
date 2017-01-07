@@ -1,6 +1,7 @@
 import gym
 import board
 import const
+import numpy as np
 
 CONST = const.CONST
 
@@ -14,7 +15,7 @@ class GameState(object):
     """A state of the game board, needed in Monte Carlo Tree Search.
        By convention, the players are numbered 1 (Black, X) and 2 (White, O).
     """
-    def __init__(self, prune=False, zero_sum=False, epsilon=0., minmax=False, immediate=False):
+    def __init__(self, prune=False, zero_sum=False, epsilon=0., minmax=False, minmax_p=2, immediate=False):
         self.py_pachi_board = env.state.board.clone()
         self.player_just_moved = CONST.WHITE() # At the root pretend the player just moved is player 2 - player 1 has the first move
         self.nbmoves = 0
@@ -24,6 +25,7 @@ class GameState(object):
         self.zero_sum = zero_sum
         self.epsilon = epsilon
         self.minmax = minmax
+        self.minmax_p = minmax_p
         self.IW = None
         self.IB = None
         self.immediate = immediate
@@ -40,12 +42,13 @@ class GameState(object):
         st.zero_sum = self.zero_sum
         st.epsilon = self.epsilon
         st.minmax = self.minmax
+        st.minmax_p = self.minmax_p
         st.IW = self.IW
         st.IB = self.IB
         st.immediate = self.immediate
         return st
     
-    def get_immediate_reward_aux(self, coord):
+    def get_immediate_reward_one_step(self, coord):
         if coord == -1:
             return 0, self.IW, self.IB
         
@@ -59,19 +62,23 @@ class GameState(object):
         return b.get_immediate_reward(next_state.player_just_moved, next_white_stones, next_black_stones, white_stones, black_stones, self.coord_to_idx(coord), self.IW, self.IB)
     
     def get_immediate_reward(self, coord):
-        if coord == -1:
-            reward = 0
-        else:
-            reward, _, _ = self.get_immediate_reward_aux(coord)
         if not(self.minmax):
+            reward, _, _ = self.get_immediate_reward_one_step(coord)
             return reward
-        
+        assert self.minmax_p >= 1
+        return self.get_immediate_reward_rec(coord, self.minmax_p)
+    
+    def get_immediate_reward_rec(self, coord, p):
+        assert p >= 1
+        reward, _, _ = self.get_immediate_reward_one_step(coord)
+        if p == 1:
+            return reward
         next_state = self.clone()
         next_state.do_move(coord)
         next_moves = next_state.get_all_moves()
-        next_reward_max, _, _ = next_state.get_immediate_reward_aux(next_moves[0])
+        next_reward_max = -np.inf
         for m in next_moves:
-            next_reward, _, _ = next_state.get_immediate_reward_aux(m)
+            next_reward = next_state.get_immediate_reward_rec(m, p - 1)
             if next_reward > next_reward_max:
                 next_reward_max = next_reward
         return reward - next_reward_max
@@ -109,13 +116,13 @@ class GameState(object):
     
     def do_move(self, coord, update=True):
         if self.prune and update:
-            r, self.IW, self.IB = self.get_immediate_reward_aux(coord)
+            r, self.IW, self.IB = self.get_immediate_reward_one_step(coord)
             if self.immediate:
                 self.accumulated_reward[(3 - self.player_just_moved) - 1] += r
                 if self.zero_sum:
                     self.accumulated_reward[self.player_just_moved - 1] -= r
         elif self.immediate:
-            r, _, _ = self.get_immediate_reward_aux(coord)
+            r, _, _ = self.get_immediate_reward_one_step(coord)
             self.accumulated_reward[(3 - self.player_just_moved) - 1] += r
             if self.zero_sum:
                 self.accumulated_reward[self.player_just_moved - 1] -= r

@@ -1,8 +1,4 @@
 from math import sqrt, log
-import board
-
-d = 9
-
 
 class GameNode(object):
     """A node in the game tree. Note wins is always from the viewpoint of player_just_moved.

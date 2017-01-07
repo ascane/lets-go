@@ -1,8 +1,13 @@
+import sys
+sys.path.append("..")
+
 import gym
+from structure import const
 
+CONST = const.CONST
 
-BLACK = 1
-WHITE = 2
+BLACK = CONST.BLACK()
+WHITE = CONST.WHITE()
  
 env = gym.make('Go9x9-v0')
 env.reset()

@@ -1,14 +1,13 @@
 import gym
 import board
+import const
 
-BLACK = 1
-WHITE = 2
+CONST = const.CONST
 
 env = gym.make('Go9x9-v0')
 env.reset()
 
-d = 9
-b = board.Board(d)
+b = board.Board(CONST.d())
 b.set_boundary('empty') # This can be changed to adversarial.
 
 class GameState(object):
@@ -17,7 +16,7 @@ class GameState(object):
     """
     def __init__(self, prune=False, zero_sum=False, epsilon=0., minmax=False):
         self.py_pachi_board = env.state.board.clone()
-        self.player_just_moved = WHITE # At the root pretend the player just moved is player 2 - player 1 has the first move
+        self.player_just_moved = CONST.WHITE() # At the root pretend the player just moved is player 2 - player 1 has the first move
         self.nbmoves = 0
         # official_score Ref: https://github.com/openai/pachi-py/blob/9cb949b9d1f2126c4f624f23ee7b982af59f5402/pachi_py/pachi/board.c#L1556
         self.prune = prune
@@ -123,7 +122,7 @@ class GameState(object):
         """ Get the game result from the viewpoint of player_just_moved. 
         """
         official_score = self.py_pachi_board.official_score
-        if ((official_score > 0 and player_just_moved == WHITE) or (official_score < 0 and player_just_moved == BLACK)):
+        if ((official_score > 0 and player_just_moved == CONST.WHITE()) or (official_score < 0 and player_just_moved == CONST.BLACK())):
             return 1
         elif (official_score == 0):
             return 0

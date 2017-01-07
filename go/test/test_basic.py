@@ -1,3 +1,6 @@
+import sys
+sys.path.append("..")
+
 # d = 9
 # coordinates = np.zeros((d*d, 2))
 # coordinates[:, 0] = np.repeat(np.arange(d), d)
@@ -8,8 +11,12 @@
 
 
 import matplotlib.pyplot as plt
+
 from structure import board
-d = 9
+from structure import const
+
+CONST = const.CONST
+d = CONST.d()
 # I, I_boundary = adversarial(d)
 # print I_boundary.reshape(d,d)
 # Iw, Ib = influence(I, I_boundary, [12, 5, 8], [])

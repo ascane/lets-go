@@ -1,9 +1,9 @@
 import numpy as np
 from scipy.spatial.distance import pdist, cdist, squareform
 import matplotlib.pyplot as plt
+import const
 
-BLACK = 1
-WHITE = 2
+CONST = const.CONST
 
 class Board(object):
     """Definition of boundary choice and immediate reward, used to prune the Monte Carlo Tree Search.
@@ -86,12 +86,12 @@ class Board(object):
         return result
     
     def get_immediate_reward_aux(self, player_just_moved, W_white, W_black, parent_W_white=[], parent_W_black=[], move=None, parent_IW=None, parent_IB=None):
-        assert player_just_moved == BLACK or player_just_moved == WHITE
+        assert player_just_moved == CONST.BLACK() or player_just_moved == CONST.WHITE()
         
         # compute parent_IW, parent_IB, IW, IB
         if parent_IW is None or parent_IB is None:
             parent_IW, parent_IB = self.get_influence(parent_W_white, parent_W_black)
-        if player_just_moved == BLACK:
+        if player_just_moved == CONST.BLACK():
             if len(parent_W_white) - len(W_white) > 0: # in case of captures
                 IW, IB = self.get_influence(W_white, W_black)
             else: # in case of non-captures, the influences can be updated easily
@@ -124,7 +124,7 @@ class Board(object):
                 
         # compute the immediate reward
         R = 0
-        if player_just_moved == BLACK:
+        if player_just_moved == CONST.BLACK():
             R += len(parent_W_white) - len(W_white) # captures
             for idx in range(self.size * self.size):
                 if  parent_IB[idx] >= 0 and IB[idx] < 0:

@@ -93,15 +93,13 @@ class Board(object):
         if player_just_moved == BLACK:
             R += len(parent_W_white) - len(W_white) # captures
             for idx in range(self.size * self.size):
-                R += max(IB[idx] - parent_IB[idx], 0.)
-                if  parent_IB[idx] < 0 and IB[idx] >= 0:
-                    R += 1
+                if  parent_IB[idx] >= 0 and IB[idx] < 0:
+                    R += max(-IB[idx] + parent_IB[idx], 0.)
         else:
             R += len(parent_W_black) - len(W_black) # captures
             for idx in range(self.size * self.size):
-                R += max(IW[idx] - parent_IW[idx], 0.)
                 if  parent_IW[idx] < 0 and IW[idx] >= 0:
-                    R += 1
+                    R += max(IW[idx] - parent_IW[idx], 0.)
         return R
     
     def get_immediate_reward(self, player_just_moved, array_coo_white, array_coo_black, array_coo_parent_white=[], array_coo_parent_black=[]):

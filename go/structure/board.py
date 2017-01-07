@@ -74,8 +74,8 @@ class Board(object):
         self.I_boundary = np.sum(np.maximum(4 - bd_dist, 0), 1)
 
     def get_influence(self, W_white, W_black):
-        influence_white = np.sum(self.I[:, W_white], 1) - np.sum(self.I[:, W_black], 1) - self.I_boundary
-        influence_black = np.sum(self.I[:, W_white], 1) - np.sum(self.I[:, W_black], 1) + self.I_boundary
+        influence_white = np.sum(self.I[:, W_white], axis=1) - np.sum(self.I[:, W_black], axis=1) - self.I_boundary
+        influence_black = influence_white + self.I_boundary
         return (influence_white, influence_black)
     
     def arraycoo2listidx(self, array_coord):
@@ -85,11 +85,45 @@ class Board(object):
             result.append(self.coo2idx(coo[0], coo[1]))
         return result
     
-    def get_immediate_reward_aux(self, player_just_moved, W_white, W_black, parent_W_white=[], parent_W_black=[]):
+    def get_immediate_reward_aux(self, player_just_moved, W_white, W_black, parent_W_white=[], parent_W_black=[], move=None, parent_IW=None, parent_IB=None):
         assert player_just_moved == BLACK or player_just_moved == WHITE
+        
+        # compute parent_IW, parent_IB, IW, IB
+        if parent_IW is None or parent_IB is None:
+            parent_IW, parent_IB = self.get_influence(parent_W_white, parent_W_black)
+        if player_just_moved == BLACK:
+            if len(parent_W_white) - len(W_white) > 0: # in case of captures
+                IW, IB = self.get_influence(W_white, W_black)
+            else: # in case of non-captures, the influences can be updated easily
+                # find the last move
+                if not(move):
+                    for m in W_black:
+                        if m not in parent_W_black:
+                            move = m
+                            break
+                if move is None:
+                    return 0, parent_IW, parent_IB
+                # update the influences
+                IW = parent_IW - self.I[:, move]
+                IB = parent_IB - self.I[:, move]
+        else:
+            if len(parent_W_black) - len(W_black) > 0: # in case of captures
+                IW, IB = self.get_influence(W_white, W_black)
+            else: # in case of non-captures, the influences can be updated easily
+                # find the last move
+                if not(move):
+                    for m in W_white:
+                        if m not in parent_W_white:
+                            move = m
+                            break
+                if move is None:
+                    return 0, parent_IW, parent_IB
+                # update the influences
+                IW = parent_IW + self.I[:, move]
+                IB = parent_IB + self.I[:, move]
+                
+        # compute the immediate reward
         R = 0
-        IW, IB = self.get_influence(W_white, W_black)
-        parent_IW, parent_IB = self.get_influence(parent_W_white, parent_W_black)
         if player_just_moved == BLACK:
             R += len(parent_W_white) - len(W_white) # captures
             for idx in range(self.size * self.size):
@@ -100,11 +134,11 @@ class Board(object):
             for idx in range(self.size * self.size):
                 if  parent_IW[idx] < 0 and IW[idx] >= 0:
                     R += max(IW[idx] - parent_IW[idx], 0.)
-        return R
+        return R, IW, IB
     
-    def get_immediate_reward(self, player_just_moved, array_coo_white, array_coo_black, array_coo_parent_white=[], array_coo_parent_black=[]):
+    def get_immediate_reward(self, player_just_moved, array_coo_white, array_coo_black, array_coo_parent_white=[], array_coo_parent_black=[], move=None, parent_IW=None, parent_IB=None):
         W_white = self.arraycoo2listidx(array_coo_white)
         W_black = self.arraycoo2listidx(array_coo_black)
         parent_W_white = self.arraycoo2listidx(array_coo_parent_white)
         parent_W_black = self.arraycoo2listidx(array_coo_parent_black)
-        return self.get_immediate_reward_aux(player_just_moved, W_white, W_black, parent_W_white, parent_W_black)
+        return self.get_immediate_reward_aux(player_just_moved, W_white, W_black, parent_W_white, parent_W_black, move, parent_IW, parent_IB)

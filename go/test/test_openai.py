@@ -58,6 +58,17 @@ print(b.ij_to_coord(0, 0))
 l = [5, 1, 2, 3]
 print(sorted(l)[-1])
 
+a1 = [1, 2, 3]
+a2 = [4, 5, 6]
+if a1[0] == 1 and a2[0] == 4:
+    print "Yep"
+    
+i, j = b.coord_to_ij(20)
+print i
+print j
+
+print not(None)
+
 
 # The implemented methods of PyPachiBoard: https://github.com/openai/pachi-py/blob/master/pachi_py/cypachi.pyx#L159
 # black (X) = 1

@@ -25,6 +25,8 @@ class GameState(object):
         self.zero_sum = zero_sum
         self.epsilon = epsilon
         self.minmax = minmax
+        self.IW = None
+        self.IB = None
     
     def clone(self):
         """ Create a deep clone of this game state.
@@ -38,32 +40,44 @@ class GameState(object):
         st.zero_sum = self.zero_sum
         st.epsilon = self.epsilon
         st.minmax = self.minmax
+        st.IW = self.IW
+        st.IB = self.IB
         return st
     
     def get_immediate_reward_aux(self, coord):
+        if coord == -1:
+            return 0, self.IW, self.IB
+        
         white_stones = self.py_pachi_board.white_stones
-        black_stone = self.py_pachi_board.black_stones
+        black_stones = self.py_pachi_board.black_stones
         next_state = self.clone()
         next_state.player_just_moved = 3 - self.player_just_moved
         next_state.py_pachi_board.play_inplace(coord, next_state.player_just_moved)
         next_white_stones = next_state.py_pachi_board.white_stones
         next_black_stones = next_state.py_pachi_board.black_stones
-        return b.get_immediate_reward(next_state.player_just_moved, next_white_stones, next_black_stones, white_stones, black_stone)
+        return b.get_immediate_reward(next_state.player_just_moved, next_white_stones, next_black_stones, white_stones, black_stones, self.coord_to_idx(coord), self.IW, self.IB)
     
     def get_immediate_reward(self, coord):
-        reward = self.get_immediate_reward_aux(coord)
+        if coord == -1:
+            reward = 0
+        else:
+            reward, _, _ = self.get_immediate_reward_aux(coord)
         if not(self.minmax):
             return reward
         
         next_state = self.clone()
         next_state.do_move(coord)
         next_moves = next_state.get_all_moves()
-        next_reward_max = next_state.get_immediate_reward_aux(next_moves[0])
+        next_reward_max, _, _ = next_state.get_immediate_reward_aux(next_moves[0])
         for m in next_moves:
-            next_reward = next_state.get_immediate_reward_aux(m)
+            next_reward, _, _ = next_state.get_immediate_reward_aux(m)
             if next_reward > next_reward_max:
                 next_reward_max = next_reward
         return reward - next_reward_max
+    
+    def coord_to_idx(self, coord):
+        i, j = self.py_pachi_board.coord_to_ij(coord)
+        return b.coo2idx(i, j)
 
     def get_all_moves(self):
         """Get all possible moves from this state, including not playing any stone (-1).
@@ -98,10 +112,12 @@ class GameState(object):
 #             self.accumulated_reward[self.player_just_moved - 1] += r
 #             if self.zero_sum:
 #                 self.accumulated_reward[(3 - self.player_just_moved) - 1] -= r
+
+        if self.prune and update:
+            _, self.IW, self.IB = self.get_immediate_reward_aux(coord)
         self.nbmoves += 1
         self.player_just_moved = 3 - self.player_just_moved
         self.py_pachi_board.play_inplace(coord, self.player_just_moved)
-            
         
     def get_result(self, player_just_moved):
         """ Get the game result from the viewpoint of player_just_moved. 
@@ -113,5 +129,3 @@ class GameState(object):
             return 0
         else:
             return -1
-
-    

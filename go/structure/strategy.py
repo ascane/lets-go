@@ -88,7 +88,7 @@ def play_game(strategy1, strategy2):
     
     
 if __name__ == "__main__":
-    strategy1 = UctStrategy(prune=True, zero_sum=False, epsilon=0., minmax=True, n_iter=10)
+    strategy1 = UctStrategy(prune=True, zero_sum=False, epsilon=0., minmax=True, n_iter=100)
     strategy2 = RandomStrategy(verbose=True)
     play_game(strategy1, strategy2)
     

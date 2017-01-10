@@ -23,8 +23,9 @@ d = CONST.d()
 
 test_board = board.Board(d)
 
-test_board.set_boundary('empty')
-Iw, Ib = test_board.get_influence([12, 5], [0])
+test_board.set_boundary('adversarial')
+Iw, Ib = test_board.get_influence([60, 16], [80])
 print Iw.reshape(d,d)
 plt.matshow(Iw.reshape(d,d))
+plt.colorbar()
 plt.show()

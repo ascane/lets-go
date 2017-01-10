@@ -37,8 +37,8 @@ def UCT(rootstate, itermax,  verbose=False):
     # Output some information about the tree - can be omitted
     if verbose: 
         print rootnode.tree_to_string(0)
-    else: 
-        print rootnode.children_to_string()
+#     else: 
+#         print rootnode.children_to_string()
 
     return sorted(rootnode.child_nodes, key = lambda c: c.visits)[-1].move # return the move that was most visited
                 

@@ -71,7 +71,7 @@ def play_game(strategy1, strategy2):
             m = strategy2.next_move()
         else:
             m = strategy1.next_move()
-        print "Best Move: " + str(m) + "\n"
+#         print "Best Move: " + str(m) + "\n"
         state1.do_move(m)
         state2.do_move(m)
         if strategy1.verbose:
@@ -90,22 +90,15 @@ def play_game(strategy1, strategy2):
     
     
 if __name__ == "__main__":
-    strategy0 = UctStrategy()
-    strategy1 = UctStrategy(n_iter=10, prune=True, zero_sum=False, epsilon=0., minmax=True, minmax_p=2)
-    strategy2 = RandomStrategy(verbose=True)
-    strategy3 = UctStrategy(n_iter=1000, prune=False, zero_sum=False, epsilon=0., minmax=True)
-    strategy4 = UctStrategy(n_iter=1000, prune=False, zero_sum=False, epsilon=0., minmax=True, immediate=True, verbose=True)
-    play_game(strategy3, strategy4)
-    
-#     wins = [0, 0]
-#     strategy1 = UctStrategy()
-#     strategy2 = RandomStrategy(verbose=True)
-#     for i in range(100):
-#         strategy1.reset()
-#         strategy2.reset()
-#         result = play_game(strategy1, strategy2)
-#         if result != 0:
-#             wins[result - 1] += 1
-#     print "Strategy1: " + str(wins[0]) + " wins. Strategy2: " + str(wins[1]) + " wins."
+    wins = [0, 0]
+    strategy1 = UctStrategy(n_iter=10)
+    strategy2 = UctStrategy(n_iter=10, prune=True, epsilon=0.2)
+    for i in range(100):
+        strategy1.reset()
+        strategy2.reset()
+        result = play_game(strategy1, strategy2)
+        if result != 0:
+            wins[result - 1] += 1
+            print "Round: " + str(i + 1) + ". Strategy1: " + str(wins[0]) + " wins. Strategy2: " + str(wins[1]) + " wins."
     
     
